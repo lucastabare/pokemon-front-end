@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card, CardContent, Typography, CardMedia } from '@mui/material';
+import styled from 'styled-components';
 
 interface _props {
     id: number;
@@ -7,8 +8,14 @@ interface _props {
     name: string;
     imageUrl: string;
     onClick: () => void;
-    isSelected: boolean; 
+    isSelected: boolean;
 }
+
+const StyledImage = styled.img`
+  height: 180px;
+  width: 100%;
+  object-fit: contain;
+`;
 
 const PokemonCard = ({ name, id_pokemon, imageUrl, onClick, isSelected }: _props) => {
     if (!name || imageUrl === undefined || id_pokemon === undefined) {
@@ -23,13 +30,8 @@ const PokemonCard = ({ name, id_pokemon, imageUrl, onClick, isSelected }: _props
                 border: isSelected ? '2px solid red' : 'none'
             }}
         >
-            <CardMedia
-                component="img"
-                height="140"
-                image={imageUrl}
-                alt={name}
-            />
-            <CardContent>
+            <StyledImage src={imageUrl} alt={name} />
+            <CardContent >
                 <Typography variant="h5">{name}</Typography>
             </CardContent>
         </Card>

@@ -6,7 +6,7 @@ const AppRouter = () => {
     <>
       <Router>
         <Routes>
-          <Route path="/pokemon" key="/pokemon" element={<PokemonPage />} />
+          <Route path="/" key="/" element={<PokemonPage />} />
         </Routes>
       </Router>
     </>

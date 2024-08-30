@@ -4,6 +4,7 @@ import PokemonCard from '../components/pokemonCard';
 import PokemonDetail from '../components/pokemonDetail';
 import api from '../service/backendService';
 import { Pokemon } from '../utils/Pokemon.interface';
+import styled from 'styled-components';
 
 const PokemonPage = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -24,7 +25,7 @@ const PokemonPage = () => {
         try {
             const response = await api.WorkflowServices.getAllPokemon();
             if (response.status === 200) {
-                setData(response.data as Pokemon[]);
+                setData(response.data.data as Pokemon[]);
             }
         } catch (error: any) {
             console.error('OH NO, HA OCURRIDO UN ERROR', error);
@@ -62,11 +63,10 @@ const PokemonPage = () => {
 
         try {
             const response = await api.WorkflowServices.postBatalla(selectedPokemon1.id_pokemon, selectedPokemon2.id_pokemon);
-            if (response.status === 200) {
-                const { winner } = response.data;
+            if (response.status === 201) {
+                const { winner } = response.data.data;
+                console.log("soy el winner => ", winner)
                 setWinner(winner);
-            } else {
-                setError('La batalla no se pudo realizar. Por favor, intenta nuevamente.');
             }
         } catch (error: any) {
             console.error('OH NO, HA OCURRIDO UN ERROR', error);
@@ -77,62 +77,72 @@ const PokemonPage = () => {
     };
 
     return (
-        <Box textAlign="center" padding={3}>
-            <Typography variant="h4" gutterBottom>
-                Battle of Pokemon
-            </Typography>
-            <Typography variant="h6" gutterBottom>
-                Select your pokemon
-            </Typography>
+        <StyledContainer>
+            <Box textAlign="center" padding={3} className="container">
+                <Typography variant="h4" gutterBottom>
+                    Battle of Pokemon
+                </Typography>
+                <Typography variant="h6" gutterBottom>
+                    Select your pokemon
+                </Typography>
 
-            {error && <Alert severity="error">{error}</Alert>}
+                {error && <Alert severity="error">{error}</Alert>}
 
-            <Grid2 container justifyContent="center" spacing={3}>
-                {isLoading ? (
-                    Array.from(new Array(5)).map((_, index) => (
-                        <Grid2 key={index}>
-                            <Skeleton variant="rectangular" width={210} height={118} />
-                        </Grid2>
-                    ))
-                ) : (
-                    data.map((pokemon) => (
-                        <Grid2 key={pokemon.id}>
-                            <PokemonCard
-                                id={pokemon.id}
-                                id_pokemon={pokemon.id_pokemon}
-                                name={pokemon.name}
-                                imageUrl={pokemon.imageUrl}
-                                onClick={() => handlePokemonSelect(pokemon)}
-                                isSelected={selectedPokemon1?.id_pokemon === pokemon.id_pokemon || selectedPokemon2?.id_pokemon === pokemon.id_pokemon} 
-                            />
-                        </Grid2>
-                    ))
-                )}
-            </Grid2>
-
-            {winner && (
-                <Paper style={{ margin: '20px', padding: '10px', backgroundColor: '#e0f7fa' }}>
-                    <Typography variant="h6">{winner}</Typography>
-                </Paper>
-            )}
-
-            {selectedPokemon1 && selectedPokemon2 && (
-                <Grid2 container justifyContent="center" spacing={5} alignItems="center" marginTop={3}>
-                    <Grid2>
-                        <PokemonDetail {...selectedPokemon1} />
-                    </Grid2>
-                    <Grid2>
-                        <Button variant="contained" color="primary" onClick={startBattle}>
-                            Versus
-                        </Button>
-                    </Grid2>
-                    <Grid2>
-                        <PokemonDetail {...selectedPokemon2} />
-                    </Grid2>
+                <Grid2 container justifyContent="space-around" spacing={3}>
+                    {isLoading ? (
+                        Array.from(new Array(5)).map((_, index) => (
+                            <Grid2 key={index}>
+                                <Skeleton variant="rectangular" width={210} height={118} />
+                            </Grid2>
+                        ))
+                    ) : (
+                        data.map((pokemon) => (
+                            <Grid2 key={pokemon.id}>
+                                <PokemonCard
+                                    id={pokemon.id}
+                                    id_pokemon={pokemon.id_pokemon}
+                                    name={pokemon.name}
+                                    imageUrl={pokemon.imageUrl}
+                                    onClick={() => handlePokemonSelect(pokemon)}
+                                    isSelected={selectedPokemon1?.id_pokemon === pokemon.id_pokemon || selectedPokemon2?.id_pokemon === pokemon.id_pokemon}
+                                />
+                            </Grid2>
+                        ))
+                    )}
                 </Grid2>
-            )}
-        </Box>
+
+                {winner && (
+                    <Paper style={{ margin: '20px', padding: '10px', backgroundColor: '#e0f7fa' }}>
+                        <Typography variant="h6">{winner} wins!</Typography>
+                    </Paper>
+                )}
+
+                {selectedPokemon1 && selectedPokemon2 && (
+                    <Grid2 container justifyContent="center" spacing={5} alignItems="center" marginTop={3}>
+                        <Grid2>
+                            <PokemonDetail {...selectedPokemon1} />
+                        </Grid2>
+                        <Grid2>
+                            <Button variant="contained" color="primary" onClick={startBattle}>
+                                Start Battle
+                            </Button>
+                        </Grid2>
+                        <Grid2>
+                            <PokemonDetail {...selectedPokemon2} />
+                        </Grid2>
+                    </Grid2>
+                )}
+            </Box>
+        </StyledContainer>
     );
 };
+
+const StyledContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem;
+  text-align: center;
+`;
 
 export default PokemonPage;
